@@ -1,0 +1,142 @@
+<!-- index.html -->
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="A browser-based MicroPython and FPGA IDE for the Vicharak Shrike-Lite." />
+  <meta name="theme-color" content="#1f1f1f" />
+  <title>Shrike Web IDE</title>
+  <meta property="og:title" content="Shrike Web IDE" />
+  <meta property="og:description" content="A browser-based MicroPython and FPGA IDE for the Vicharak Shrike-Lite." />
+  <meta property="og:type" content="website" />
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Shrike Web IDE" />
+  <meta name="twitter:description" content="A browser-based MicroPython and FPGA IDE for the Vicharak Shrike-Lite." />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%234f9cff'/%3E%3Cpath d='M18 5 8 18h7l-1 9 10-13h-7z' fill='%2307121f'/%3E%3C/svg%3E" />
+</head>
+<body>
+  <div id="app">
+    <header id="topbar">
+      <div class="menu-bar">
+        <button id="btn-menu" class="icon only-mobile" title="Files" aria-label="Files"><span data-icon="menu"></span></button>
+        <button id="btn-terminal-menu" class="menu-item" type="button">Terminal</button>
+        <div class="menu-wrap">
+          <button id="btn-help-menu" class="menu-item" type="button" aria-expanded="false">Help</button>
+          <div id="help-menu" class="help-menu" hidden>
+            <a class="menu-row" href="https://discord.gg/EhQy97CQ9G" target="_blank" rel="noopener noreferrer">Community</a>
+            <a class="menu-row" href="https://discuss.vicharak.in/" target="_blank" rel="noopener noreferrer">Discuss</a>
+            <span class="menu-row menu-disabled" aria-disabled="true" title="Report Bug is not available yet">Report Bug</span>
+          </div>
+        </div>
+        <div class="settings-wrap">
+          <button id="btn-settings" class="menu-item settings-menu-button" type="button" title="Settings" aria-label="Settings" aria-expanded="false">Settings</button>
+          <div id="settings-menu" class="settings-menu" hidden>
+            <label class="menu-row settings-row">
+              <span>Theme</span>
+              <select id="theme-select">
+                <option value="dark">Dark</option>
+                <option value="light">Light</option>
+              </select>
+            </label>
+            <label class="menu-row settings-row">
+              <span>Run timeout</span>
+              <select id="sel-timeout" title="Stop the program automatically after">
+                <option value="0">No timeout</option>
+                <option value="10">10 s</option>
+                <option value="30">30 s</option>
+                <option value="60">1 min</option>
+                <option value="300">5 min</option>
+              </select>
+            </label>
+            <label class="menu-row settings-check" title="Soft reset before each run to restart the board and re-run boot.py / main.py">
+              <input id="chk-fresh" type="checkbox" />
+              <div>
+                <span>Fresh state</span>
+                <small>Soft reset before each run.</small>
+              </div>
+            </label>
+            <div class="settings-update">
+              <button id="btn-firmware-update" class="menu-row" type="button">Firmware updates…</button>
+              <label class="menu-row settings-check" title="Checks the matching v1.0.0 build without flashing automatically.">
+                <input id="chk-auto-update" type="checkbox" />
+                <div>
+                  <span>Check updates on connect</span>
+                  <small>Checks the matching v1.0.0 build without flashing automatically.</small>
+                </div>
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="topbar-center">
+        <div class="group run-group">
+          <button id="btn-runstop" class="run" title="Run (Ctrl/Cmd+Enter)">
+            <span class="runstop-play" data-icon="play" data-size="13"></span>
+            <span class="runstop-stop" data-icon="stop" data-size="13"></span>
+            <span id="runstop-label">Run</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="group right-group">
+        <button id="btn-status" class="icon" title="Hide status bar" aria-label="Toggle status bar" aria-pressed="true"><span data-icon="panel-bottom" data-size="16"></span></button>
+        <button id="btn-connect" class="primary" data-connected="false" title="Connect to a board (Shift+click to list all serial devices)">
+          <span class="i-plug" data-icon="plug" data-size="14"></span><span class="i-unplug" data-icon="unplug" data-size="14"></span><span id="connect-label">Connect</span>
+        </button>
+      </div>
+    </header>
+    <div id="banner" hidden></div>
+    <main id="workspace">
+      <aside id="sidebar">
+        <nav id="activity" class="tabs" aria-label="Views">
+          <button data-tab="files" class="active" title="Files" aria-label="Files"><span data-icon="files" data-size="22"></span></button>
+          <button data-tab="device" title="Device" aria-label="Device"><span data-icon="hard-drive" data-size="22"></span></button>
+          <button data-tab="fpga" title="FPGA" aria-label="FPGA"><span data-icon="cpu" data-size="22"></span></button>
+        </nav>
+        <div id="side-body">
+          <div id="side-title">Explorer</div>
+          <div id="pane-files" class="pane"></div>
+          <div id="pane-device" class="pane" hidden>
+            <div class="device-select-wrap">
+              <select id="device-select" class="device-select" aria-label="Active device" title="Choose the active board">
+                <option value="">Choose device…</option>
+              </select>
+            </div>
+            <div id="pane-device-files"></div>
+          </div>
+          <div id="pane-fpga" class="pane" hidden></div>
+        </div>
+      </aside>
+      <section id="center">
+        <div id="editor-tabs"></div>
+        <div id="editor"></div>
+
+        <!-- status bar now lives inside the editor area -->
+        <footer id="statusbar" data-state="disconnected">
+          <div id="status" data-state="disconnected"><span class="dot"></span><span id="status-text">Disconnected</span></div>
+          <span class="spacer"></span>
+          <span id="sb-file"></span>
+          <span id="sb-pos"></span>
+          <span id="sb-lang" hidden>Plain Text</span>
+          <button id="btn-sb-close" class="icon sb-close" title="Hide status bar" aria-label="Hide status bar"><span data-icon="x" data-size="14"></span></button>
+        </footer>
+
+        <div id="splitter" title="Drag to resize"></div>
+        <div id="terminal-wrap">
+          <div class="term-head">
+            <div class="panel-tab">Terminal</div>
+            <span class="spacer"></span>
+            <button id="btn-reset" class="icon" title="Soft reset (Ctrl-D): re-runs boot.py / main.py" aria-label="Soft reset"><span data-icon="rotate"></span></button>
+            <button id="btn-term-clear" class="icon" title="Clear terminal" aria-label="Clear terminal"><span data-icon="eraser"></span></button>
+            <button id="btn-term-close" class="icon" title="Close terminal" aria-label="Close terminal"><span data-icon="x"></span></button>
+          </div>
+          <div id="terminal"></div>
+        </div>
+      </section>
+    </main>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>

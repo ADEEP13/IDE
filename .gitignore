@@ -1,0 +1,12 @@
+node_modules/
+dist/
+*.log
+.env
+.env.*
+.DS_Store
+Thumbs.db
+*.lnk
+*.rar
+*.zip
+.vscode/*
+coverage/

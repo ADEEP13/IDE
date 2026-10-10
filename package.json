@@ -1,0 +1,36 @@
+{
+  "name": "shrike-web-ide",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Browser-based MicroPython + FPGA IDE for the Vicharak Shrike-Lite (Web Serial)",
+  "repository": "https://github.com/ADEEP13/IDE",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@codemirror/commands": "^6.7.1",
+    "@codemirror/lang-python": "^6.1.6",
+    "@codemirror/language": "^6.10.3",
+    "@codemirror/state": "^6.4.1",
+    "@codemirror/theme-one-dark": "^6.1.2",
+    "@codemirror/view": "^6.34.1",
+    "@xterm/addon-fit": "^0.10.0",
+    "@xterm/xterm": "^5.5.0",
+    "codemirror": "^6.0.1"
+  },
+  "devDependencies": {
+    "@types/w3c-web-serial": "^1.0.7",
+    "typescript": "^5.6.3",
+    "vite": "^5.4.10",
+    "vitest": "^2.1.4"
+  }
+}
