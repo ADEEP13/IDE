@@ -1,148 +1,141 @@
 # Shrike Web IDE
 
-A browser-based MicroPython and FPGA IDE for the Vicharak Shrike-Lite.
+**Program your Shrike-Lite from a browser tab. Write MicroPython, run it on the board, and load FPGA designs, with nothing to install.**
 
 [![Version 0.1.0](https://img.shields.io/badge/version-0.1.0-blue)](package.json)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![CI](https://github.com/ADEEP13/IDE/actions/workflows/ci.yml/badge.svg)](https://github.com/ADEEP13/IDE/actions/workflows/ci.yml)
 
-## Live demo and status
+**[Open the IDE → ide.adeepag.com](https://ide.adeepag.com)**
 
-Live demo: <https://ide.adeepag.com>
+> **Status: v0.1.0, early release.** The core workflow (write, run, stop, manage files, flash the FPGA) is in place and under active testing on real hardware. Expect rough edges, and please report them.
 
-**Status: IDE v0.1.0, early release.**
+<!-- Add a screenshot or short GIF of the IDE here, for example: ![Shrike Web IDE](docs/screenshot.png) -->
 
-## Features
+---
 
-- CodeMirror 6 Python editor with tabs, per-tab undo history, autosave, import, and Ctrl/Cmd+S save.
-- Local IndexedDB projects with an in-memory fallback, project switching, and selected-project ZIP download.
-- Web Serial connection to authorised boards, including multiple-device selection and switching.
-- Device filesystem browsing and editing, upload, download, delete, file/folder creation, project sync, and text import.
-- Run, stop, soft reset, streamed stdout/stderr, terminal REPL access, and configurable run timeout/fresh-state options in Settings.
-- Help menu with Community and Discuss links.
-- FPGA compatibility checks, `.bin` bitstream upload, and `shrike.flash()` support.
-- Firmware updater with chip detection, download, and placement under `/firmware`.
-- Dark mode by default with an optional light theme.
+## What is it?
 
-## Requirements
+The [Vicharak Shrike-Lite](https://github.com/vicharak-in/shrike) pairs an RP2040 microcontroller with a small FPGA on one board. That is a great learning platform, but getting started usually means installing several tools, picking the right board packages, and learning how each part talks to the others.
 
-- Chrome or Edge on desktop. Web Serial is unsupported in Firefox and Safari.
-- HTTPS or `http://localhost` when running the app.
-- Node.js 18+ for local development.
-- A USB data cable.
-- Vicharak's custom MicroPython firmware for the board.
+**Shrike Web IDE puts the whole beginner workflow in one browser tab.** Plug in the board over USB, press **Connect**, and you can edit code, run it, watch the output, browse the board's files, and load an FPGA design, all in the same window.
 
-## Quick start
+There is no account, no installer, and no server. Your projects stay in your browser.
 
-1. Open the IDE in Chrome or Edge and connect the board with a USB data cable.
-2. Press **Connect** and choose the board. Shift-click **Connect** to list all authorised serial devices.
-3. Open `main.py` from the starter project and press **Run** or Ctrl/Cmd+Enter.
-4. View streamed output in the terminal. Press **Stop** or use Ctrl-C to interrupt the program.
+---
 
-When no program is running, the terminal is a normal MicroPython REPL. Ctrl-D performs a soft reset and Ctrl-E enables paste mode.
+## Why you might like it
 
-## Local development
+### Start in under a minute
+Open the page, plug in the board, press Connect. There is no setup, no board manager, no drivers to hunt down, and no toolchain to keep up to date. If you can open a website, you can start.
 
-```bash
-npm install
-npm run dev
-npm run build
-npm run preview
-npm test
-npm run typecheck
-```
+### See results immediately
+MicroPython runs the moment you press **Run**. There is no compile step and no upload wait. Output streams into the built-in terminal as it happens, and **Stop** interrupts a running program straight away. Change a line, press Run again, and see the difference in seconds.
 
-`npm run build` runs the TypeScript check and produces the Vite output in `dist/`.
+### One place for the MCU and the FPGA
+The FPGA panel checks that your board has the right firmware, uploads a bitstream, and programs the FPGA with one click. You don't need a separate flashing tool.
 
-## FPGA workflow
+### Your files, on the board
+A built-in file manager lets you browse the board's storage, open and edit files, upload, download, create folders, and sync a whole project to the device. Saves are verified, so you know the file that landed on the board is the file you sent.
 
-The RP2040 loads the FPGA bitstream as a file on the MicroPython filesystem. The FPGA panel:
+### Safe by design
+- **Run timeout:** stop runaway programs automatically after 10 s, 30 s, 1 min or 5 min.
+- **Fresh state:** optionally soft-reset the board before every run so each run starts clean.
+- **Honest about firmware:** the firmware updater downloads the right build for your board and says clearly when a manual BOOTSEL step is still needed. It never claims something was flashed when it wasn't.
 
-1. Checks whether the board is MicroPython-compatible and whether the `shrike` module exposes `flash`.
-2. Uploads a `.bin` bitstream to `/` on the board and verifies the write.
-3. Runs `import shrike; shrike.flash("name.bin")` to program the FPGA.
+### Private and offline-friendly
+Projects are saved locally in your browser and autosaved as you type. Nothing is uploaded anywhere. The only network requests the app makes are the ones you ask for, such as downloading a firmware build.
 
-The IDE does not synthesize Verilog; use Renesas Go Configure Software Hub to create a bitstream. The bitstream size warning is advisory, based on community-tested files rather than official documentation. RP2040 GPIO 0–3, 12, and 13 are wired to the FPGA link; avoid them in application code when appropriate.
+---
 
-## Firmware updater
+## Shrike Web IDE vs Arduino IDE
 
-The updater in **IDE v0.1.0** detects RP2040, RP2350, and ESP32-C3 boards and offers matching builds from the board firmware **v1.0.0** release. It can download the board firmware v1.0.0 UF2 or place it under `/firmware` on the board's MicroPython filesystem.
+Both are good tools. They are built for different starting points.
 
-Web Serial cannot copy a UF2 directly into the bootloader drive. Installing board firmware v1.0.0 still requires disconnecting the IDE, entering BOOTSEL/mass-storage mode, and copying the file to the board drive. The updater does not claim that placing a file on `/firmware` has flashed the board.
+| | **Shrike Web IDE** | **Arduino IDE** |
+|---|---|---|
+| **Installation** | None. Open a web page. | Install the application, then add board packages and libraries. |
+| **Language** | MicroPython | C/C++ |
+| **Edit → see result** | Press Run and the code runs instantly. | Compile, upload, then reset. Slower for small experiments. |
+| **Interactive console** | Built-in MicroPython REPL: try one line at a time. | Serial Monitor for output only. |
+| **Board files** | Browse, edit, upload and download files on the board. | Not part of the workflow. |
+| **FPGA support** | Check, upload and program the FPGA bitstream from the same window. | Needs a separate flashing step. |
+| **Platform** | Any desktop with Chrome or Edge. | Windows, macOS and Linux apps. |
+| **Updates** | Always the latest version when you open the page. | Download and install new releases yourself. |
+| **Best for** | Learning, quick experiments, classrooms, workshops. | Performance-critical C/C++ firmware and the large Arduino library ecosystem. |
 
-## Architecture
+### When Arduino IDE is the better choice
+Shrike Web IDE is intentionally focused. Pick the Arduino IDE if you need to:
+- write C/C++ firmware, or
+- use Arduino libraries that have no MicroPython equivalent, or
+- work in a browser other than Chrome or Edge.
 
-```text
-src/
-  serial/SerialTransport.ts   Web Serial: open/close, serial writes, read loop, unplug detection
-  serial/RxBuffer.ts          passthrough terminal data and protocol reads with timeouts
-  repl/protocol.ts            REPL control bytes and prompts
-  repl/RawRepl.ts             raw REPL and raw-paste client
-  repl/RawRepl.test.ts        raw REPL tests with a simulated device
-  device/DeviceSession.ts     connection state, run/stop, and serialized operations
-  device/DeviceFs.ts          device file operations over the raw REPL
-  device/pyutil.ts            device probe snippets and result parsing
-  device/types.ts             device information types
-  fpga/FpgaTools.ts           compatibility evaluation, upload, and flash helpers
-  storage/ProjectStore.ts     IndexedDB storage and in-memory fallback
-  editor/EditorManager.ts     CodeMirror editor and editor tabs
-  ui/                         terminal, explorers, FPGA panel, firmware updater, dialogs, icons, and toasts
-  util/                       byte, error, and event utilities
-  main.ts                     application wiring
-```
+---
 
-Modules communicate through small interfaces and events; UI code does not access the serial port directly.
+## Who is it for?
 
-## Deployment
+- **Beginners** who want to blink an LED and understand an FPGA without a day of setup.
+- **Students and classrooms**, where any laptop with Chrome can be ready in seconds.
+- **Workshops and demos**, where there is no time to install anything on 30 machines.
+- **Makers** who want to try an idea quickly, then move to heavier tools if they need them.
 
-The project can be deployed to Cloudflare Pages:
+---
 
-- Build command: `npm run build`
-- Output directory: `dist`
-- Node.js version: 18 or newer
+## What it can do today
 
-Configure the custom domain in Cloudflare Pages after the project is deployed. A hosted deployment must use HTTPS because Web Serial is restricted to secure contexts, except for localhost during development.
+- Python editor with syntax highlighting, tabs and autosave
+- Multiple local projects, with import from your computer
+- One-click connect over USB, with support for several authorised boards
+- Run, stop, soft reset and a live terminal with a full MicroPython REPL
+- Run timeout and fresh-state options
+- Device file manager: browse, edit, upload, download, delete, create folders, sync and import
+- FPGA compatibility check, bitstream upload and flashing
+- Firmware updater with chip detection and downloads
+- Dark and light themes
+
+---
+
+## What it doesn't do (yet)
+
+Being clear about the limits so there are no surprises:
+
+- **No C/C++ compilation.** MicroPython only.
+- **No Verilog synthesis.** Create your FPGA bitstream with Renesas Go Configure, then load it here.
+- **Chrome and Edge on desktop only.** Other browsers don't support the Web Serial technology the IDE relies on, and phones can't connect to USB boards this way.
+- **Firmware installation still needs BOOTSEL mode.** A browser cannot write straight into the board's bootloader drive.
+- **Early release.** Version 0.1.0 has been tried on limited hardware.
+
+---
+
+## What you'll need
+
+- A Shrike-Lite (or a compatible Shrike board) running Vicharak's custom MicroPython firmware
+- A USB-C **data** cable (charge-only cables won't work)
+- Chrome or Edge on a desktop or laptop
+
+---
 
 ## Troubleshooting
 
-- **No port in the chooser:** use a USB data cable. A board in BOOTSEL mode appears as a drive rather than a serial port.
-- **Could not open the serial port:** close Thonny, `mpremote`, another IDE tab, or any other program using the port.
-- **Hosted copy does not connect:** use an HTTPS deployment. Firefox and Safari do not support Web Serial.
-- **Linux permissions:** add the user to `dialout` or `uucp`, then log in again.
-- **Cannot enter raw REPL:** press RESET, or remove/fix a `main.py` that catches `KeyboardInterrupt`.
-- **Disconnects after `machine.reset()`:** the USB device re-enumerates; press Connect again.
-- **Stop does nothing:** code with interrupts disabled or stuck in C may not respond; disconnect and press RESET.
-- **Indented terminal paste:** use paste mode with Ctrl-E, or run the script from the editor.
+- **No board shows up:** try a different USB cable, since many cables only charge. A board in BOOTSEL mode appears as a drive, not a serial device.
+- **"Could not open the serial port":** close Thonny, mpremote or any other tab using the board.
+- **The page can't connect:** use Chrome or Edge on a desktop, and make sure the page is loaded over HTTPS.
+- **The board disconnects after `machine.reset()`:** that's normal. The board restarts its USB connection, so press Connect again.
 
-## Known limitations and verification status
+---
 
-- The browser accesses the MicroPython filesystem over Web Serial; it cannot watch or read a Windows mass-storage drive such as `E:` while the serial connection is open.
-- Only one board is active at a time, although multiple authorised boards can be selected and switched.
-- A hosted copy requires HTTPS; Web Serial is unavailable in Firefox and Safari.
-- C/C++ compilation, Verilog synthesis, cloud sync, and a backend are not included.
-- The custom `shrike.py` implementation is not read by the IDE; it relies on the documented `shrike.flash(name)` API.
+## Feedback and contributions
 
-Automated verification consists of the repository's TypeScript check, unit tests, and production build. Hardware testing is limited to what I confirm.
+Found a bug or want a feature? [Open an issue](https://github.com/ADEEP13/IDE/issues). Contributions are welcome. Keep changes focused and make sure the project's checks pass before you open a pull request.
 
-**Hardware verification: <fill in>**
+---
 
-## Roadmap / out of scope
+## Credits
 
-- C/C++ compilation
-- Verilog synthesis
-- Cloud sync
-- Backend services
+Built for the [Vicharak Shrike](https://github.com/vicharak-in/shrike) boards, with [CodeMirror](https://codemirror.net/) and [xterm.js](https://xtermjs.org/).
 
-## Contributing
-
-Keep changes focused, preserve the browser-only architecture, and run `npm run typecheck`, `npm test`, and `npm run build` before opening a pull request.
+Shrike and Shrike-Lite are products of Vicharak.
 
 ## License
 
-MIT. See [LICENSE](LICENSE).
-
-## Credits and acknowledgements
-
-- [Vicharak Shrike](https://github.com/vicharak-in/shrike)
-- [CodeMirror](https://codemirror.net/)
-- [xterm.js](https://xtermjs.org/)
+[MIT](LICENSE)
