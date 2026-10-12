@@ -1,4 +1,4 @@
-# Shrike Web IDE
+# Geto  Web IDE
 
 **Program your Shrike-Lite from a browser tab. Write MicroPython, run it on the board, and load FPGA designs, with nothing to install.**
 
@@ -18,7 +18,7 @@
 
 The [Vicharak Shrike-Lite](https://github.com/vicharak-in/shrike) pairs an RP2040 microcontroller with a small FPGA on one board. That is a great learning platform, but getting started usually means installing several tools, picking the right board packages, and learning how each part talks to the others.
 
-**Shrike Web IDE puts the whole beginner workflow in one browser tab.** Plug in the board over USB, press **Connect**, and you can edit code, run it, watch the output, browse the board's files, and load an FPGA design, all in the same window.
+** Geto Web IDE puts the whole beginner workflow in one browser tab.** Plug in the board over USB, press **Connect**, and you can edit code, run it, watch the output, browse the board's files, and load an FPGA design, all in the same window.
 
 There is no account, no installer, and no server. Your projects stay in your browser.
 
@@ -48,11 +48,11 @@ Projects are saved locally in your browser and autosaved as you type. Nothing is
 
 ---
 
-## Shrike Web IDE vs Arduino IDE
+## Geto Web IDE vs Arduino IDE
 
 Both are good tools. They are built for different starting points.
 
-| | **Shrike Web IDE** | **Arduino IDE** |
+| | ** Geto  Web IDE** | **Arduino IDE** |
 |---|---|---|
 | **Installation** | None. Open a web page. | Install the application, then add board packages and libraries. |
 | **Language** | MicroPython | C/C++ |
